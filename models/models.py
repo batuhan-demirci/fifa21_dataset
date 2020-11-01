@@ -141,8 +141,7 @@ class TblPlayerTrait(Base):
 class TblPlayerUrl(Base):
     __tablename__ = 'tbl_player_urls'
 
-    int_player_url_id = Column(Integer, primary_key=True)
-    int_player_id = Column(Integer, nullable=False)
+    int_player_id = Column(Integer, primary_key=True)
     str_url = Column(String(255), nullable=False)
     dt_crawled = Column(DateTime)
 
@@ -180,7 +179,6 @@ class TblTeamTactic(Base):
 class TblTeamUrl(Base):
     __tablename__ = 'tbl_team_urls'
 
-    int_team_url_id = Column(Integer, primary_key=True)
-    int_team_id = Column(Integer, nullable=False)
+    int_team_id = Column(Integer, primary_key=True)
     str_url = Column(String(255), nullable=False)
     dt_crawled = Column(DateTime)
