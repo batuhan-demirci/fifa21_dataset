@@ -133,3 +133,6 @@ database.ini
 
 # VS code
 **/.vscode/
+
+# pycharm
+.idea
