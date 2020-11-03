@@ -5,13 +5,20 @@ from sqlalchemy.orm import Session, sessionmaker
 from utils.db_connection_manager import ConnectionManager
 from crawler.crawler import Crawler
 
+# TODO logging
+
 if __name__ == '__main__':
 
     crawler = Crawler()
 
-    # crawler.crawl_teams()
+    crawler.gather_links(is_team=True)  # default is True but pass it anyway
+    crawler.gather_links(is_team=False)
 
-    crawler.crawl_players()
+    # crawler.crawl_teams()
+    # crawler.crawl_players()
+
+    # TODO visit_team_page()
+    # TODO visit_player_page()
 
     # db_manager = ConnectionManager()
     # connection, cursor = db_manager.connect()
