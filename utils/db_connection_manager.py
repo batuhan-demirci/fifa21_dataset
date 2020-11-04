@@ -4,9 +4,22 @@ import psycopg2
 
 
 class ConnectionManager:
+    """
+    This class handles database connections
+    __enter__() and __exit__() functions make this class acts like a context-manager
+    Use it with "with ConnectionManager() as manager:" to not worry about closing connections and resource leaking
+    """
 
     def __init__(self):
-        pass
+        self.con = None
+        self.cur = None
+
+    def __enter__(self):
+        self.con, self.cur = self.connect()
+        return self
+
+    def __exit__(self, *args):
+        self.close()
 
     def connect(self):
         """ Connect to the db """
@@ -29,16 +42,15 @@ class ConnectionManager:
         finally:
             return conn, cur
 
-    @staticmethod
-    def close(connection, cursor):
+    def close(self):
         """ This function closes db connection """
 
         # close the communication with the db
-        cursor.close()
+        self.cur.close()
 
         # close the connection
-        if connection is not None:
-            connection.close()
+        if self.con is not None:
+            self.con.close()
 
     @staticmethod
     def get_config(filename="database.ini", section='postgresql'):
@@ -73,5 +85,5 @@ class ConnectionManager:
                                                                  params["host"],
                                                                  params["port"],
                                                                  params["database"])
-        # 'postgresql://scott:tiger@localhost:5432/mydatabase'
+        # 'postgresql://user:password@host:port/database'
         return connection_string

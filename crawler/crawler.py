@@ -4,10 +4,16 @@ from time import sleep
 
 
 class Crawler:
-    """ Gathers team and player urls and extracts information about them """
+    """
+    Gathers team and player urls, visit those urls and extracts information in them
+    """
 
-    # delay, sec
+    # delay sec, be kind to the server
     politeness = 2
+
+    # lists that stores pages to be crawl
+    team_urls = []
+    player_urls = []
 
     base_site_url = "https://sofifa.com"
     next_page_selector = "#adjust > div > div.column.col-auto > div > div > a"
@@ -17,17 +23,17 @@ class Crawler:
     teams_url_selector = "#adjust > div > div.column.col-auto > div > " \
                          "table > tbody > tr > td.col-name-wide > a:nth-child(1)"
 
-    team_urls = []
-
     # player selectors
     base_players_url = "https://sofifa.com/players?r=210007&set=true"
     players_next_page_selector = "#adjust > div > div.column.col-auto > div > div > a"
     player_url_selector = "#adjust > div > div.column.col-auto > div > table > " \
                           "tbody > tr > td > a.tooltip"
-    player_urls = []
 
     def gather_links(self, is_team=True):
-        """ This function crawl team or player pages and gather links """
+        """
+        Takes is_team as a parameter and according to that gather links for teams or players
+        At each page it checks if there is a next page, and if so continues to the next page as well.
+        """
         try:
 
             current_page = self.base_teams_url if is_team else self.base_players_url
@@ -58,7 +64,9 @@ class Crawler:
         print("All links found.")
 
     def get_urls_in_page(self, soup, is_team=True):
-        """ Collects team or player links """
+        """
+        Takes is_team as a parameter, according to that it collects appropriate urls and stores
+        """
 
         if is_team:
             team_urls_in_page = soup.select(self.teams_url_selector)
@@ -66,12 +74,13 @@ class Crawler:
                 self.team_urls.append(self.base_site_url + url["href"])
         else:
             player_urls_in_page = soup.select(self.player_url_selector)
-
             for url in player_urls_in_page:
                 self.player_urls.append(self.base_site_url + url["href"])
 
     def is_next_page_exists(self, soup):
-        """ Returns if next page button exists, and if it's exists returns url of the next page also. """
+        """
+        Returns if next page button exists, and if it's exists returns url of the next page also.
+        """
 
         next_page = soup.select(self.next_page_selector)
 

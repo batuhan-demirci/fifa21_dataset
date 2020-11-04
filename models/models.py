@@ -12,6 +12,10 @@ class TblPlayer(Base):
 
     int_player_id = Column(Integer, primary_key=True)
     str_player_name = Column(String(120))
+
+    def __repr__(self) -> str:
+        return super().__repr__()
+
     str_positions = Column(String(120))
     dt_date_of_birth = Column(Date)
     int_height = Column(Integer)
@@ -146,6 +150,14 @@ class TblPlayerUrl(Base):
     dt_crawled = Column(DateTime)
 
 
+class TblTeamUrl(Base):
+    __tablename__ = 'tbl_team_urls'
+
+    int_team_id = Column(Integer, primary_key=True)
+    str_url = Column(String(255), nullable=False)
+    dt_crawled = Column(DateTime)
+
+
 class TblTeam(Base):
     __tablename__ = 'tbl_team'
 
@@ -174,11 +186,3 @@ class TblTeamTactic(Base):
     int_players_in_box = Column(Integer)
     int_corners = Column(Integer)
     int_freekicks = Column(Integer)
-
-
-class TblTeamUrl(Base):
-    __tablename__ = 'tbl_team_urls'
-
-    int_team_id = Column(Integer, primary_key=True)
-    str_url = Column(String(255), nullable=False)
-    dt_crawled = Column(DateTime)
