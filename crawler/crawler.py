@@ -2,13 +2,16 @@ from requests import get
 from bs4 import BeautifulSoup
 from time import sleep
 from controllers.controllers import Controllers
-from models.models import TblTeam, TblTeamTactic
+from crawler.crawler_utils import CrawlerUtils
 
 
 class Crawler:
     """
     Gathers team and player urls, visit those urls and extracts information in them
     """
+
+    # DB controller
+    controller = Controllers()
 
     # delay sec, be kind to the server
     politeness = 2
@@ -20,6 +23,19 @@ class Crawler:
     # team tables
     teams = []
     team_tactics = []
+
+    # player tables
+    players = []
+    player_attacking = []
+    player_defending = []
+    player_goalkeeping = []
+    player_mentality = []
+    player_movement = []
+    player_power = []
+    player_profile = []
+    player_skill = []
+    player_speciality = []
+    player_traits = []
 
     base_site_url = "https://sofifa.com"
     next_page_selector = "#adjust > div > div.column.col-auto > div > div > a"
@@ -72,22 +88,20 @@ class Crawler:
 
     def crawl(self):
 
-        controller = Controllers()
-
         # Team url crawling and inserting
         # self.gather_links(is_team=True)  # default is True but pass it anyway
         # controller.insert_tbl_team_urls(self.team_urls)
 
         # print("Team urls inserted to DB.")
 
-        self.visit_team_page(controller=controller)
+        # self.visit_team_page(controller=controller)
         # controller.insert_tbl_team(tbl_teams=self.teams)
-        controller.insert_tbl_team_tactic(tbl_team_tactics=self.team_tactics)
+        # controller.insert_tbl_team_tactic(tbl_team_tactics=self.team_tactics)
 
         # Player url crawling and inserting
         # self.gather_links(is_team=False)
         # controller.insert_tbl_player_urls(self.player_urls)
-
+        self.visit_player_page(controller=self.controller)
         # print("Player urls inserted to DB")
 
     def gather_links(self, is_team=True):
@@ -153,64 +167,110 @@ class Crawler:
     def visit_team_page(self, controller):
         tbl_team_urls = controller.get_tbl_team_urls()
 
-        for tbl_team_url in tbl_team_urls:
+        for i, tbl_team_url in enumerate(tbl_team_urls):
             response = get(tbl_team_url.str_url)
             soup = BeautifulSoup(response.text, 'html.parser')
 
-            tbl_team = TblTeam()
-            tbl_team.int_team_id = tbl_team_url.int_team_id
-            tbl_team.str_team_name = soup.select(self.team_str_team_name_selector)[0].text
-            tbl_team.str_league = soup.select(self.team_str_league_selector)[0].text
-            tbl_team.int_overall = int(soup.select(self.team_int_overall_selector)[0].text)
-            tbl_team.int_attack = int(soup.select(self.team_int_attack_selector)[0].text)
-            tbl_team.int_midfield = int(soup.select(self.team_int_midfield_selector)[0].text)
-            tbl_team.int_defence = int(soup.select(self.team_int_defence_selector)[0].text)
-            tbl_team.int_international_prestige = int(soup.select(self.team_int_international_prestige_selector)
-                                                      [0].text)
-            tbl_team.int_domestic_prestige = int(soup.select(self.team_int_domestic_prestige_selector)[0].text)
-
-            str_transfer_budget = soup.select(self.team_int_transfer_budget_selector)[0].text
-            int_transfer_budget = self.format_transfer_budget(str_transfer_budget)
-
-            if int_transfer_budget is not None:
-                tbl_team.int_transfer_budget = int_transfer_budget
-
+            tbl_team = CrawlerUtils.handle_tbl_team(soup=soup, tbl_team_url=tbl_team_url)
             self.teams.append(tbl_team)
 
-            tbl_team_tactic = TblTeamTactic()
-            tbl_team_tactic.int_team_id = tbl_team_url.int_team_id
-            tbl_team_tactic.str_defensive_style = soup.select(self.team_str_defensive_style_selector)[0].text
-            tbl_team_tactic.int_team_width = int(soup.select(self.team_int_team_width_selector)[0].text)
-            tbl_team_tactic.int_depth = int(soup.select(self.team_int_depth_selector)[0].text)
-            tbl_team_tactic.str_offensive_style = soup.select(self.team_str_offensive_style_selector)[0].text
-            tbl_team_tactic.int_width = int(soup.select(self.team_int_width_selector)[0].text)
-            tbl_team_tactic.int_players_in_box = int(soup.select(self.team_int_players_in_box_selector)[0].text)
-            tbl_team_tactic.int_corners = int(soup.select(self.team_int_corners_selector)[0].text)
-            tbl_team_tactic.int_freekicks = int(soup.select(self.team_int_freekicks_selector)[0].text)
-
+            tbl_team_tactic = CrawlerUtils.handle_tbl_team_tactics(soup=soup, tbl_team_url=tbl_team_url)
             self.team_tactics.append(tbl_team_tactic)
 
-            print("{} crawled".format(tbl_team.str_team_name))
+            print("{}/{} - {} crawled".format(i + 1, len(tbl_team_urls), tbl_team.str_team_name))
             sleep(self.politeness)
 
-    @staticmethod
-    def format_transfer_budget(str_transfer_budget):
+    def visit_player_page(self, controller):
+        tbl_player_urls = controller.get_tbl_player_urls()
 
-        str_transfer_budget = str_transfer_budget.split("€")[1]  # Remove "Transfer Budget text
-        str_transfer_budget = str_transfer_budget.replace(".", "")  # Remove dots
+        while len(tbl_player_urls) != 0:
+            for i, tbl_player_url in enumerate(tbl_player_urls):
+                response = get(tbl_player_url.str_url)
+                soup = BeautifulSoup(response.text, 'html.parser')
 
-        if str_transfer_budget.endswith("M"):
-            str_transfer_budget = str_transfer_budget[:-1] + "000000"  # Remove M and add 6 zeros
-        elif str_transfer_budget.endswith("K"):
-            str_transfer_budget = str_transfer_budget[:-1] + "000"  # Remove K and add 3 zeros
-        else:
-            print(str_transfer_budget)
+                tbl_player = CrawlerUtils.handle_tbl_player(soup=soup)
+                self.players.append(tbl_player)
 
-        try:
-            return int(str_transfer_budget)
-        except ValueError:
-            return None
+                int_player_id = tbl_player.int_player_id
 
+                # Attacking
+                tbl_player_attacking = CrawlerUtils.handle_tbl_player_attacking(soup=soup,
+                                                                                int_player_id=int_player_id)
+                self.player_attacking.append(tbl_player_attacking)
 
-    def visit_player_page(self):
-        pass
+                # Defending
+                tbl_player_defending = CrawlerUtils.handle_tbl_player_defending(soup=soup,
+                                                                                int_player_id=int_player_id)
+                self.player_defending.append(tbl_player_defending)
+
+                # Goalkeeping
+                tbl_player_goalkeeping = CrawlerUtils.handle_tbl_player_goalkeeping(soup=soup,
+                                                                                    int_player_id=int_player_id)
+                self.player_goalkeeping.append(tbl_player_goalkeeping)
+
+                # Mentality
+                tbl_player_mentality = CrawlerUtils.handle_tbl_player_mentality(soup=soup,
+                                                                                int_player_id=int_player_id)
+                self.player_mentality.append(tbl_player_mentality)
+
+                # Movement
+                tbl_player_movement = CrawlerUtils.handle_tbl_player_movement(soup=soup,
+                                                                              int_player_id=int_player_id)
+                self.player_movement.append(tbl_player_movement)
+
+                # Power
+                tbl_player_power = CrawlerUtils.handle_tbl_player_power(soup=soup,
+                                                                        int_player_id=int_player_id)
+                self.player_power.append(tbl_player_power)
+
+                # Profile
+                tbl_player_profile = CrawlerUtils.handle_tbl_player_profile(soup=soup,
+                                                                            int_player_id=int_player_id)
+                self.player_profile.append(tbl_player_profile)
+
+                # Skill
+                tbl_player_skill = CrawlerUtils.handle_tbl_player_skill(soup=soup,
+                                                                        int_player_id=int_player_id)
+                self.player_skill.append(tbl_player_skill)
+
+                # Specialities
+                tbl_player_speciality = CrawlerUtils.handle_tbl_player_specialities(soup=soup,
+                                                                                    int_player_id=int_player_id)
+                self.player_speciality.append(tbl_player_speciality)
+
+                # Traits
+                tbl_player_traits = CrawlerUtils.handle_tbl_player_traits(soup=soup,
+                                                                          int_player_id=int_player_id)
+                self.player_traits.append(tbl_player_traits)
+
+                print("{}/{} - {} crawled".format(i + 1, len(tbl_player_urls), tbl_player.str_player_name))
+                sleep(self.politeness)
+
+            # Handle inserting operations after 500 player loop finishes
+            self.handle_insert_player_tables()
+
+    def handle_insert_player_tables(self):
+        """ Inserts and clears player tables """
+        self.controller.insert_tbl_player(self.players)
+        self.controller.insert_tbl_player_attacking(self.player_attacking)
+        self.controller.insert_tbl_player_defending(self.player_defending)
+        self.controller.insert_tbl_player_goalkeeping(self.player_goalkeeping)
+        self.controller.insert_tbl_player_mentality(self.player_mentality)
+        self.controller.insert_tbl_player_movement(self.player_movement)
+        self.controller.insert_tbl_player_power(self.player_power)
+        self.controller.insert_tbl_player_profile(self.player_profile)
+        self.controller.insert_tbl_player_skill(self.player_skill)
+        self.controller.insert_tbl_player_speciality(self.player_speciality)
+        self.controller.insert_tbl_player_traits(self.player_traits)
+
+        self.players = []
+        self.player_attacking = []
+        self.player_defending = []
+        self.player_goalkeeping = []
+        self.player_mentality = []
+        self.player_movement = []
+        self.player_power = []
+        self.player_profile = []
+        self.player_skill = []
+        self.player_speciality = []
+        self.player_traits = []
