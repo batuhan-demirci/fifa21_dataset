@@ -10,81 +10,51 @@ class Crawler:
     Gathers team and player urls, visit those urls and extracts information in them
     """
 
-    # DB controller
-    controller = Controllers()
+    def __init__(self):
 
-    # delay sec, be kind to the server
-    politeness = 2
+        # DB controller
+        self.controller = Controllers()
 
-    # lists that stores pages to be crawl
-    team_urls = []
-    player_urls = []
+        # Crawler Utils
+        self.crawler_utils = CrawlerUtils()
 
-    # team tables
-    teams = []
-    team_tactics = []
+        # delay sec, be kind to the server
+        self.politeness = 2
 
-    # player tables
-    players = []
-    player_attacking = []
-    player_defending = []
-    player_goalkeeping = []
-    player_mentality = []
-    player_movement = []
-    player_power = []
-    player_profile = []
-    player_skill = []
-    player_speciality = []
-    player_traits = []
+        # lists that stores pages to be crawl
+        self.team_urls = []
+        self.player_urls = []
 
-    base_site_url = "https://sofifa.com"
-    next_page_selector = "#adjust > div > div.column.col-auto > div > div > a"
+        # team tables
+        self.teams = []
+        self.team_tactics = []
 
-    # team selectors
-    base_teams_url = "https://sofifa.com/teams?type=club"
-    teams_url_selector = "#adjust > div > div.column.col-auto > div > " \
-                         "table > tbody > tr > td.col-name-wide > a:nth-child(1)"
+        # player tables
+        self.players = []
+        self.player_attacking = []
+        self.player_defending = []
+        self.player_goalkeeping = []
+        self.player_mentality = []
+        self.player_movement = []
+        self.player_power = []
+        self.player_profile = []
+        self.player_skill = []
+        self.player_speciality = []
+        self.player_traits = []
 
-    team_str_team_name_selector = "#list > div:nth-child(4) > div > div > div.column.col-12 > div > " \
-                                  "div:nth-child(1) > div > div > h1"
-    team_str_league_selector = "#list > div:nth-child(4) > div > div > div.column.col-12 > div > " \
-                               "div:nth-child(1) > div > div > div > a:nth-child(2)"
-    team_int_overall_selector = "#list > div:nth-child(4) > div > div > div.column.col-12 > div > " \
-                                "div:nth-child(1) > div > section > div > div:nth-child(1) > div > span"
-    team_int_attack_selector = "#list > div:nth-child(4) > div > div > div.column.col-12 > " \
-                               "div > div:nth-child(1) > div > section > div > div:nth-child(2) > div > span"
-    team_int_midfield_selector = "#list > div:nth-child(4) > div > div > div.column.col-12 > " \
-                                 "div > div:nth-child(1) > div > section > div > div:nth-child(3) > div > span"
-    team_int_defence_selector = "#list > div:nth-child(4) > div > div > div.column.col-12 > " \
-                                "div > div:nth-child(1) > div > section > div > div:nth-child(4) > div > span"
-    team_int_international_prestige_selector = "#list > div:nth-child(4) > div > div > div.column.col-12 > " \
-                                               "div > div.column.col-4 > div > ul > li:nth-child(3) > span"
-    team_int_domestic_prestige_selector = "#list > div:nth-child(4) > div > div > div.column.col-12 > " \
-                                          "div > div.column.col-4 > div > ul > li:nth-child(4) > span"
-    team_int_transfer_budget_selector = "#list > div:nth-child(4) > div > div > " \
-                                        "div.column.col-12 > div > div.column.col-4 > div > ul > li:nth-child(5)"
-    team_str_defensive_style_selector = "#list > div:nth-child(4) > div > div > " \
-                                        "div.column.col-4 > div:nth-child(1) > dl > dd:nth-child(2) > span > span"
-    team_int_team_width_selector = "#list > div:nth-child(4) > div > div > div.column.col-4 > " \
-                                   "div:nth-child(1) > dl > dd:nth-child(3) > span.float-right > span"
-    team_int_depth_selector = "#list > div:nth-child(4) > div > div > div.column.col-4 > " \
-                              "div:nth-child(1) > dl > dd:nth-child(4) > span.float-right > span"
-    team_str_offensive_style_selector = "#list > div:nth-child(4) > div > " \
-                                        "div > div.column.col-4 > div:nth-child(1) > dl > dd:nth-child(6) > span > span"
-    team_int_width_selector = "#list > div:nth-child(4) > div > div > div.column.col-4 > " \
-                              "div:nth-child(1) > dl > dd:nth-child(7) > span.float-right > span"
-    team_int_players_in_box_selector = "#list > div:nth-child(4) > div > div > div.column.col-4 > " \
-                                       "div:nth-child(1) > dl > dd:nth-child(8) > span.float-right > span"
-    team_int_corners_selector = "#list > div:nth-child(4) > div > div > div.column.col-4 > " \
-                                "div:nth-child(1) > dl > dd:nth-child(9) > span.float-right > span"
-    team_int_freekicks_selector = "#list > div:nth-child(4) > div > div > div.column.col-4 > " \
-                                  "div:nth-child(1) > dl > dd:nth-child(10) > span.float-right > span"
+        self.base_site_url = "https://sofifa.com"
+        self.next_page_selector = "#adjust > div > div.column.col-auto > div > div > a"
 
-    # player selectors
-    base_players_url = "https://sofifa.com/players?r=210007&set=true"
-    players_next_page_selector = "#adjust > div > div.column.col-auto > div > div > a"
-    player_url_selector = "#adjust > div > div.column.col-auto > div > table > " \
-                          "tbody > tr > td > a.tooltip"
+        # team selectors
+        self.base_teams_url = "https://sofifa.com/teams?type=club"
+        self.teams_url_selector = "#adjust > div > div.column.col-auto > div > " \
+                                  "table > tbody > tr > td.col-name-wide > a:nth-child(1)"
+
+        # player selectors
+        self.base_players_url = "https://sofifa.com/players?r=210007&set=true"
+        self.players_next_page_selector = "#adjust > div > div.column.col-auto > div > div > a"
+        self.player_url_selector = "#adjust > div > div.column.col-auto > div > table > " \
+                                   "tbody > tr > td > a.tooltip"
 
     def crawl(self):
 
@@ -171,76 +141,87 @@ class Crawler:
             response = get(tbl_team_url.str_url)
             soup = BeautifulSoup(response.text, 'html.parser')
 
-            tbl_team = CrawlerUtils.handle_tbl_team(soup=soup, tbl_team_url=tbl_team_url)
+            tbl_team = self.crawler_utils.handle_tbl_team(soup=soup, tbl_team_url=tbl_team_url)
             self.teams.append(tbl_team)
 
-            tbl_team_tactic = CrawlerUtils.handle_tbl_team_tactics(soup=soup, tbl_team_url=tbl_team_url)
+            tbl_team_tactic = self.crawler_utils.handle_tbl_team_tactics(soup=soup, tbl_team_url=tbl_team_url)
             self.team_tactics.append(tbl_team_tactic)
 
             print("{}/{} - {} crawled".format(i + 1, len(tbl_team_urls), tbl_team.str_team_name))
             sleep(self.politeness)
 
     def visit_player_page(self, controller):
+
+        # TODO add /?units=mks to url to get correct units
+
         tbl_player_urls = controller.get_tbl_player_urls()
 
+        # Get 500 player url every time
         while len(tbl_player_urls) != 0:
             for i, tbl_player_url in enumerate(tbl_player_urls):
                 response = get(tbl_player_url.str_url)
                 soup = BeautifulSoup(response.text, 'html.parser')
 
-                tbl_player = CrawlerUtils.handle_tbl_player(soup=soup)
+                # get team url
+                str_team_url = soup.select(self.crawler_utils.player_str_team_url)[0].text
+                str_team_url = self.base_site_url + str_team_url[1:]  # remove first slash, it's already in site url
+
+                # get team id from url -if exists-
+                int_team_id = self.controller.get_team_id_by_url(str_team_url)
+
+                tbl_player = self.crawler_utils.handle_tbl_player(soup=soup, int_team_id=int_team_id)
                 self.players.append(tbl_player)
 
                 int_player_id = tbl_player.int_player_id
 
                 # Attacking
-                tbl_player_attacking = CrawlerUtils.handle_tbl_player_attacking(soup=soup,
-                                                                                int_player_id=int_player_id)
+                tbl_player_attacking = self.crawler_utils.handle_tbl_player_attacking(soup=soup,
+                                                                                      int_player_id=int_player_id)
                 self.player_attacking.append(tbl_player_attacking)
 
                 # Defending
-                tbl_player_defending = CrawlerUtils.handle_tbl_player_defending(soup=soup,
-                                                                                int_player_id=int_player_id)
+                tbl_player_defending = self.crawler_utils.handle_tbl_player_defending(soup=soup,
+                                                                                      int_player_id=int_player_id)
                 self.player_defending.append(tbl_player_defending)
 
                 # Goalkeeping
-                tbl_player_goalkeeping = CrawlerUtils.handle_tbl_player_goalkeeping(soup=soup,
-                                                                                    int_player_id=int_player_id)
+                tbl_player_goalkeeping = self.crawler_utils.handle_tbl_player_goalkeeping(soup=soup,
+                                                                                          int_player_id=int_player_id)
                 self.player_goalkeeping.append(tbl_player_goalkeeping)
 
                 # Mentality
-                tbl_player_mentality = CrawlerUtils.handle_tbl_player_mentality(soup=soup,
-                                                                                int_player_id=int_player_id)
+                tbl_player_mentality = self.crawler_utils.handle_tbl_player_mentality(soup=soup,
+                                                                                      int_player_id=int_player_id)
                 self.player_mentality.append(tbl_player_mentality)
 
                 # Movement
-                tbl_player_movement = CrawlerUtils.handle_tbl_player_movement(soup=soup,
-                                                                              int_player_id=int_player_id)
+                tbl_player_movement = self.crawler_utils.handle_tbl_player_movement(soup=soup,
+                                                                                    int_player_id=int_player_id)
                 self.player_movement.append(tbl_player_movement)
 
                 # Power
-                tbl_player_power = CrawlerUtils.handle_tbl_player_power(soup=soup,
-                                                                        int_player_id=int_player_id)
+                tbl_player_power = self.crawler_utils.handle_tbl_player_power(soup=soup,
+                                                                              int_player_id=int_player_id)
                 self.player_power.append(tbl_player_power)
 
                 # Profile
-                tbl_player_profile = CrawlerUtils.handle_tbl_player_profile(soup=soup,
-                                                                            int_player_id=int_player_id)
+                tbl_player_profile = self.crawler_utils.handle_tbl_player_profile(soup=soup,
+                                                                                  int_player_id=int_player_id)
                 self.player_profile.append(tbl_player_profile)
 
                 # Skill
-                tbl_player_skill = CrawlerUtils.handle_tbl_player_skill(soup=soup,
-                                                                        int_player_id=int_player_id)
+                tbl_player_skill = self.crawler_utils.handle_tbl_player_skill(soup=soup,
+                                                                              int_player_id=int_player_id)
                 self.player_skill.append(tbl_player_skill)
 
                 # Specialities
-                tbl_player_speciality = CrawlerUtils.handle_tbl_player_specialities(soup=soup,
-                                                                                    int_player_id=int_player_id)
+                tbl_player_speciality = self.crawler_utils.handle_tbl_player_specialities(soup=soup,
+                                                                                          int_player_id=int_player_id)
                 self.player_speciality.append(tbl_player_speciality)
 
                 # Traits
-                tbl_player_traits = CrawlerUtils.handle_tbl_player_traits(soup=soup,
-                                                                          int_player_id=int_player_id)
+                tbl_player_traits = self.crawler_utils.handle_tbl_player_traits(soup=soup,
+                                                                                int_player_id=int_player_id)
                 self.player_traits.append(tbl_player_traits)
 
                 print("{}/{} - {} crawled".format(i + 1, len(tbl_player_urls), tbl_player.str_player_name))
@@ -248,6 +229,7 @@ class Crawler:
 
             # Handle inserting operations after 500 player loop finishes
             self.handle_insert_player_tables()
+            tbl_player_urls = controller.get_tbl_player_urls()  # Get new batch
 
     def handle_insert_player_tables(self):
         """ Inserts and clears player tables """

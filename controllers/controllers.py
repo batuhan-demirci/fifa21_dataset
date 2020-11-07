@@ -59,6 +59,8 @@ class Controllers:
     def insert_tbl_team_tactic(self, tbl_team_tactics):
         with ConnectionManager() as manager:
             for tbl_team_tactic in tbl_team_tactics:
+
+                # TODO look for better escaping
                 q = self.q_insert_tbl_team_tactics.format(tbl_team_tactic.int_team_id,
                                                           tbl_team_tactic.str_defensive_style.replace("'", "''"),
                                                           tbl_team_tactic.int_team_width,
