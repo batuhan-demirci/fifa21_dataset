@@ -1,5 +1,7 @@
 from models.models import *
 import re
+from datetime import datetime
+
 
 class CrawlerUtils:
 
@@ -77,28 +79,28 @@ class CrawlerUtils:
 
         # tbl_player_attacking
         self.player_int_crossing_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 > div.columns " \
-                                            "> div:nth-child(4) > div > ul > li:nth-child(1) > span.bp3-tag.p.p-53"
+                                            "> div:nth-child(4) > div > ul > li:nth-child(1) > span.bp3-tag.p"
         self.player_int_finishing_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 > div.columns " \
-                                             "> div:nth-child(4) > div > ul > li:nth-child(2) > span.bp3-tag.p.p-36"
+                                             "> div:nth-child(4) > div > ul > li:nth-child(2) > span.bp3-tag.p"
         self.player_int_heading_accuracy_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                     "> div.columns > div:nth-child(4) > div > ul " \
-                                                    "> li:nth-child(3) > span.bp3-tag.p.p-74"
+                                                    "> li:nth-child(3) > span.bp3-tag.p"
         self.player_int_short_passing_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                  "> div.columns > div:nth-child(4) > div > ul > li:nth-child(4) " \
-                                                 "> span.bp3-tag.p.p-77"
+                                                 "> span.bp3-tag.p"
         self.player_int_volleys_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 > div.columns " \
-                                           "> div:nth-child(4) > div > ul > li:nth-child(5) > span.bp3-tag.p.p-42"
+                                           "> div:nth-child(4) > div > ul > li:nth-child(5) > span.bp3-tag.p"
 
         # tbl_player_defending
         self.player_int_defensive_awareness_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                        "> div.columns > div:nth-child(9) > div > ul " \
-                                                       "> li:nth-child(1) > span.bp3-tag.p.p-79"
+                                                       "> li:nth-child(1) > span.bp3-tag.p"
         self.player_int_standing_tackle_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                    "> div.columns > div:nth-child(9) > div > ul " \
-                                                   "> li:nth-child(2) > span.bp3-tag.p.p-83"
+                                                   "> li:nth-child(2) > span.bp3-tag.p"
         self.player_int_sliding_tackle_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                   "> div.columns > div:nth-child(9) > div > ul " \
-                                                  "> li:nth-child(3) > span.bp3-tag.p.p-78"
+                                                  "> li:nth-child(3) > span.bp3-tag.p"
 
         # tbl_player_goalkeeping
         self.player_int_diving_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
@@ -107,69 +109,69 @@ class CrawlerUtils:
                                             " div.columns > div:nth-child(10) > div > ul > li:nth-child(2) > span"
         self.player_int_kicking_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                            "> div.columns > div:nth-child(10) > div > ul > li:nth-child(3) > span"
-        self.player_int_positioning_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
-                                               "> div.columns > div:nth-child(10) > div > ul > li:nth-child(4) > span"
+        self.player_int_gk_positioning_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 > " \
+                                                  "div.columns > div:nth-child(10) > div > ul > li:nth-child(4) > span"
         self.player_int_reflexes_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                             "> div.columns > div:nth-child(10) > div > ul > li:nth-child(5) > span"
 
         # tbl_player_mentality
         self.player_int_aggression_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                               "> div.columns > div:nth-child(8) > div > ul " \
-                                              "> li:nth-child(1) > span.bp3-tag.p.p-73"
+                                              "> li:nth-child(1) > span.bp3-tag.p"
         self.player_int_interceptions_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                  "> div.columns > div:nth-child(8) > div > ul " \
-                                                 "> li:nth-child(2) > span.bp3-tag.p.p-80"
+                                                 "> li:nth-child(2) > span.bp3-tag.p"
         self.player_int_positioning_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                "> div.columns > div:nth-child(8) > div > ul " \
-                                               "> li:nth-child(3) > span.bp3-tag.p.p-36"
+                                               "> li:nth-child(3) > span.bp3-tag.p"
         self.player_int_vision_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                           "> div.columns > div:nth-child(8) > div > ul " \
-                                          "> li:nth-child(4) > span.bp3-tag.p.p-67"
+                                          "> li:nth-child(4) > span.bp3-tag.p"
         self.player_int_penalties_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                              "> div.columns > div:nth-child(8) > div > ul " \
-                                             "> li:nth-child(5) > span.bp3-tag.p.p-40"
+                                             "> li:nth-child(5) > span.bp3-tag.p"
         self.player_int_composure_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                              "> div.columns > div:nth-child(8) > div > ul > li:nth-child(6) > span"
 
         # tbl_player_movement
         self.player_int_acceleration_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                 "> div.columns > div:nth-child(6) > div > ul " \
-                                                "> li:nth-child(1) > span.bp3-tag.p.p-73"
+                                                "> li:nth-child(1) > span.bp3-tag.p"
         self.player_int_sprint_speed_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                 "> div.columns > div:nth-child(6) > div > ul " \
-                                                "> li:nth-child(2) > span.bp3-tag.p.p-81"
+                                                "> li:nth-child(2) > span.bp3-tag.p"
         self.player_int_agility_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                            "> div.columns > div:nth-child(6) > div > ul " \
-                                           "> li:nth-child(3) > span.bp3-tag.p.p-69"
+                                           "> li:nth-child(3) > span.bp3-tag.p"
         self.player_int_reactions_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                              "> div.columns > div:nth-child(6) > div > ul " \
-                                             "> li:nth-child(4) > span.bp3-tag.p.p-77"
+                                             "> li:nth-child(4) > span.bp3-tag.p"
         self.player_int_balance_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                            "> div.columns > div:nth-child(6) > div > ul " \
-                                           "> li:nth-child(5) > span.bp3-tag.p.p-64"
+                                           "> li:nth-child(5) > span.bp3-tag.p"
 
         # tbl_player_power
         self.player_int_shot_power_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                               "> div.columns > div:nth-child(7) > div > ul " \
-                                              "> li:nth-child(1) > span.bp3-tag.p.p-75"
+                                              "> li:nth-child(1) > span.bp3-tag.p"
         self.player_int_jumping_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                            "> div.columns > div:nth-child(7) > div > ul " \
-                                           "> li:nth-child(2) > span.bp3-tag.p.p-80"
+                                           "> li:nth-child(2) > span.bp3-tag.p"
         self.player_int_stamina_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                            "> div.columns > div:nth-child(7) > div > ul " \
-                                           "> li:nth-child(3) > span.bp3-tag.p.p-72"
+                                           "> li:nth-child(3) > span.bp3-tag.p"
         self.player_int_strength_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                             "> div.columns > div:nth-child(7) > div > ul " \
-                                            "> li:nth-child(4) > span.bp3-tag.p.p-78"
+                                            "> li:nth-child(4) > span.bp3-tag.p"
         self.player_int_long_shots_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                               "> div.columns > div:nth-child(7) > div > ul " \
-                                              "> li:nth-child(5) > span.bp3-tag.p.p-48"
+                                              "> li:nth-child(5) > span.bp3-tag.p"
 
         # tbl_player_profile
         self.player_str_preferred_foot_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                   "> div.columns > div:nth-child(2) > div " \
                                                   "> div:nth-child(1) > div > ul > li:nth-child(1)"
-        self.player_int_week_foot_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
+        self.player_int_weak_foot_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                              "> div.columns > div:nth-child(2) > div > div:nth-child(1) " \
                                              "> div > ul > li:nth-child(2)"
         self.player_int_skill_moves_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
@@ -189,19 +191,19 @@ class CrawlerUtils:
         # tbl_player_skill
         self.player_int_dribbling_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                              "> div.columns > div:nth-child(5) > div > ul " \
-                                             "> li:nth-child(1) > span.bp3-tag.p.p-69"
+                                             "> li:nth-child(1) > span.bp3-tag.p"
         self.player_int_curve_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                          "> div.columns > div:nth-child(5) > div > ul " \
-                                         "> li:nth-child(2) > span.bp3-tag.p.p-54"
+                                         "> li:nth-child(2) > span.bp3-tag.p"
         self.player_int_fk_accuracy_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                "> div.columns > div:nth-child(5) > div > ul " \
-                                               "> li:nth-child(3) > span.bp3-tag.p.p-55"
+                                               "> li:nth-child(3) > span.bp3-tag.p"
         self.player_int_long_passing_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                 "> div.columns > div:nth-child(5) > div > ul " \
-                                                "> li:nth-child(4) > span.bp3-tag.p.p-74"
+                                                "> li:nth-child(4) > span.bp3-tag.p"
         self.player_int_ball_control_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                 "> div.columns > div:nth-child(5) > div > ul " \
-                                                "> li:nth-child(5) > span.bp3-tag.p.p-74"
+                                                "> li:nth-child(5) > span.bp3-tag.p"
 
         # tbl_player_specialities, extract from list
         self.player_str_player_speciality_selector = "#list > div:nth-child(5) > div > div " \
@@ -249,11 +251,20 @@ class CrawlerUtils:
 
         return tbl_team_tactic
 
-    def handle_tbl_player(self, soup, int_team_id):
+    def handle_tbl_player(self, soup, int_player_id, int_team_id):
         tbl_player = TblPlayer()
+
+        tbl_player.int_player_id = int_player_id
         tbl_player.int_team_id = int_team_id
         tbl_player.str_player_name = soup.select(self.player_str_player_name_selector)[0].text
-        tbl_player.str_positions = soup.select(self.player_str_positions_selector)[0].text
+
+        positions = soup.select(self.player_str_positions_selector)
+        str_positions = ""
+
+        for pos in positions:
+            str_positions += ", " + pos.text
+
+        tbl_player.str_positions = str_positions
 
         dob_height_weight = soup.select(self.player_dob_height_weight_selector)[0].text
         dob, height, weight = self.split_personal_data(dob_height_weight)
@@ -274,7 +285,7 @@ class CrawlerUtils:
             date_of_birth = self.parse_date(dob)
             tbl_player.dt_date_of_birth = date_of_birth
 
-        tbl_player.int_overall_rating = int(soup.select(self.team_int_overall_selector)[0].text)
+        tbl_player.int_overall_rating = int(soup.select(self.player_int_overall_rating_selector)[0].text)
         tbl_player.int_potential_rating = int(soup.select(self.player_int_potential_rating_selector)[0].text)
         tbl_player.str_best_position = soup.select(self.player_str_best_position_selector)[0].text
         tbl_player.int_best_overall_rating = int(soup.select(self.player_int_best_overall_rating_selector)[0].text)
@@ -291,48 +302,166 @@ class CrawlerUtils:
         if int_wage is not None:
             tbl_player.int_wage = int_wage
 
-        tbl_player.str_player_image_url = soup.select(self.player_str_player_image_url_selector)[0].text
+        tbl_player.str_player_image_url = soup.select(self.player_str_player_image_url_selector)[0]["data-src"]
+        return tbl_player
 
     def handle_tbl_player_attacking(self, soup, int_player_id):
-        pass
+        attacking = TblPlayerAttacking()
+
+        attacking.int_player_id = int_player_id
+        attacking.int_crossing = int(soup.select(self.player_int_crossing_selector)[0].text)
+        attacking.int_finishing = int(soup.select(self.player_int_finishing_selector)[0].text)
+        attacking.int_heading_accuracy = int(soup.select(self.player_int_heading_accuracy_selector)[0].text)
+        attacking.int_short_passing = int(soup.select(self.player_int_short_passing_selector)[0].text)
+        attacking.int_volleys = int(soup.select(self.player_int_volleys_selector)[0].text)
+
+        return attacking
 
     def handle_tbl_player_defending(self, soup, int_player_id):
-        pass
+        defending = TblPlayerDefending()
+
+        defending.int_player_id = int_player_id
+        defending.int_defensive_awareness = int(soup.select(self.player_int_defensive_awareness_selector)[0].text)
+        defending.int_standing_tackle = int(soup.select(self.player_int_standing_tackle_selector)[0].text)
+        defending.int_sliding_tackle = int(soup.select(self.player_int_sliding_tackle_selector)[0].text)
+
+        return defending
 
     def handle_tbl_player_goalkeeping(self, soup, int_player_id):
-        pass
+        goalkeeping = TblPlayerGoalkeeping()
+
+        goalkeeping.int_player_id = int_player_id
+        goalkeeping.int_diving = int(soup.select(self.player_int_diving_selector)[0].text)
+        goalkeeping.int_handling = int(soup.select(self.player_int_handling_selector)[0].text)
+        goalkeeping.int_kicking = int(soup.select(self.player_int_kicking_selector)[0].text)
+        goalkeeping.int_positioning = int(soup.select(self.player_int_gk_positioning_selector)[0].text)
+        goalkeeping.int_reflexes = int(soup.select(self.player_int_reflexes_selector)[0].text)
+
+        return goalkeeping
 
     def handle_tbl_player_mentality(self, soup, int_player_id):
-        pass
+        mentality = TblPlayerMentality()
+
+        mentality.int_player_id = int_player_id
+        mentality.int_aggression = int(soup.select(self.player_int_aggression_selector)[0].text)
+        mentality.int_interceptions = int(soup.select(self.player_int_interceptions_selector)[0].text)
+        mentality.int_positioning = int(soup.select(self.player_int_positioning_selector)[0].text)
+        mentality.int_vision = int(soup.select(self.player_int_vision_selector)[0].text)
+        mentality.int_penalties = int(soup.select(self.player_int_penalties_selector)[0].text)
+        mentality.int_composure = int(soup.select(self.player_int_composure_selector)[0].text)
+
+        return mentality
 
     def handle_tbl_player_movement(self, soup, int_player_id):
-        pass
+        movement = TblPlayerMovement()
+
+        movement.int_player_id = int_player_id
+        movement.int_acceleration = int(soup.select(self.player_int_acceleration_selector)[0].text)
+        movement.int_sprint_speed = int(soup.select(self.player_int_sprint_speed_selector)[0].text)
+        movement.int_agility = int(soup.select(self.player_int_agility_selector)[0].text)
+        movement.int_reactions = int(soup.select(self.player_int_reactions_selector)[0].text)
+        movement.int_balance = int(soup.select(self.player_int_balance_selector)[0].text)
+
+        return movement
 
     def handle_tbl_player_power(self, soup, int_player_id):
-        pass
+        power = TblPlayerPower()
+
+        power.int_player_id = int_player_id
+        power.int_shot_power = int(soup.select(self.player_int_shot_power_selector)[0].text)
+        power.int_jumping = int(soup.select(self.player_int_jumping_selector)[0].text)
+        power.int_stamina = int(soup.select(self.player_int_stamina_selector)[0].text)
+        power.int_strength = int(soup.select(self.player_int_strength_selector)[0].text)
+        power.int_long_shots = int(soup.select(self.player_int_long_shots_selector)[0].text)
+
+        return power
 
     def handle_tbl_player_profile(self, soup, int_player_id):
-        pass
+        profile = TblPlayerProfile()
+
+        profile.int_player_id = int_player_id
+        profile.str_preferred_foot = soup.select(self.player_str_preferred_foot_selector)[0].text\
+            .replace("Preferred Foot", "")
+
+        str_weak_foot = soup.select(self.player_int_weak_foot_selector)[0].text.replace(" ★ Weak Foot", "")
+        profile.int_weak_foot = int(str_weak_foot)
+
+        str_skill_moves = soup.select(self.player_int_skill_moves_selector)[0].text.replace(" ★ Skill Moves", "")
+        profile.int_skill_moves = int(str_skill_moves)
+
+        str_international_reputations = soup.select(self.player_int_international_reputations_selector)[0]\
+            .text.replace(" ★ International Reputation", "")
+        profile.int_international_reputations = int(str_international_reputations)
+
+        profile.str_work_rate = soup.select(self.player_str_work_rate_selector)[0].text
+        profile.str_body_type = soup.select(self.player_str_body_type_selector)[0].text
+
+        return profile
 
     def handle_tbl_player_skill(self, soup, int_player_id):
-        pass
+        skill = TblPlayerSkill()
+
+        skill.int_player_id = int_player_id
+        skill.int_dribbling = int(soup.select(self.player_int_dribbling_selector)[0].text)
+        skill.int_curve = int(soup.select(self.player_int_curve_selector)[0].text)
+        skill.int_fk_accuracy = int(soup.select(self.player_int_fk_accuracy_selector)[0].text)
+        skill.int_long_passing = int(soup.select(self.player_int_long_passing_selector)[0].text)
+        skill.int_ball_control = int(soup.select(self.player_int_ball_control_selector)[0].text)
+
+        return skill
 
     def handle_tbl_player_specialities(self, soup, int_player_id):
-        pass
+        # check if exist
+        specialities_list = soup.select(self.player_str_player_speciality_selector)
+        specialities = []
+        if specialities_list is not None and len(specialities_list) == 1:
+            specialities_li_items = specialities_list[0].text.replace("\n", "").split("#")
+
+            for li in specialities_li_items:
+                if li != "":
+                    speciality = TblPlayerSpeciality()
+                    speciality.int_player_id = int_player_id
+                    speciality.str_player_speciality = li
+                    specialities.append(speciality)
+
+        return specialities
 
     def handle_tbl_player_traits(self, soup, int_player_id):
-        pass
+        # check if exist
+        traits_list = soup.select(self.player_str_trait_selector)
+        traits = []
+
+        if traits_list is not None and len(traits_list) == 1:
+            traits_li_items = traits_list[0]
+            for li in traits_li_items:
+                if li != "":
+                    trait = TblPlayerTrait()
+                    trait.int_player_id = int_player_id
+                    trait.str_trait = li.text
+                    traits.append(trait)
+
+        return traits
 
     @staticmethod
     def format_money(money):
 
-        money = money.split("€")[1]  # Remove "Transfer Budget text
+        money = money.replace("Value", "")
+        money = money.replace("Wage", "")
+        money = money.split("€")[1]
+
+        # if "money" value is like "103.5M" we should add 5 zeros not 6
+        digit_count_after_dot = 0
+        split_from_dot = money.split(".")
+
+        if len(split_from_dot) == 2:
+            digit_count_after_dot = len(split_from_dot[1]) - 1  # minus 1 because of the "M" of "K"
+
         money = money.replace(".", "")  # Remove dots
 
         if money.endswith("M"):
-            money = money[:-1] + "000000"  # Remove M and add 6 zeros
+            money = money[:-1] + ("0" * (6 - digit_count_after_dot))  # Remove M and add appropriate # of zero
         elif money.endswith("K"):
-            money = money[:-1] + "000"  # Remove K and add 3 zeros
+            money = money[:-1] + ("0" * (3 - digit_count_after_dot))  # Remove K and add appropriate # of zero
         else:
             print(money)
 
@@ -355,5 +484,5 @@ class CrawlerUtils:
 
     @staticmethod
     def parse_date(date):
-        # TODO
-        return date
+        date_object = datetime.strptime(date, "%b %d, %Y")
+        return date_object

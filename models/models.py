@@ -107,7 +107,7 @@ class TblPlayerProfile(Base):
     int_profile_id = Column(Integer, primary_key=True)
     int_player_id = Column(Integer, nullable=False)
     str_preferred_foot = Column(String(20))
-    int_week_foot = Column(Integer)
+    int_weak_foot = Column(Integer)
     int_skill_moves = Column(Integer)
     int_international_reputations = Column(Integer)
     str_work_rate = Column(String(100))

@@ -19,7 +19,7 @@ class Crawler:
         self.crawler_utils = CrawlerUtils()
 
         # delay sec, be kind to the server
-        self.politeness = 2
+        self.politeness = 1
 
         # lists that stores pages to be crawl
         self.team_urls = []
@@ -152,27 +152,31 @@ class Crawler:
 
     def visit_player_page(self, controller):
 
-        # TODO add /?units=mks to url to get correct units
+        # add ?units=mks to url to get correct units
+        metric = "?units=mks"
 
         tbl_player_urls = controller.get_tbl_player_urls()
 
         # Get 500 player url every time
         while len(tbl_player_urls) != 0:
             for i, tbl_player_url in enumerate(tbl_player_urls):
-                response = get(tbl_player_url.str_url)
+                response = get(tbl_player_url.str_url + metric)
                 soup = BeautifulSoup(response.text, 'html.parser')
 
+                int_player_id = tbl_player_url.int_player_id
+
                 # get team url
-                str_team_url = soup.select(self.crawler_utils.player_str_team_url)[0].text
-                str_team_url = self.base_site_url + str_team_url[1:]  # remove first slash, it's already in site url
+                str_team_url = soup.select(self.crawler_utils.player_str_team_url)[0]["href"]
+                str_team_url = self.base_site_url + str_team_url
 
                 # get team id from url -if exists-
                 int_team_id = self.controller.get_team_id_by_url(str_team_url)
 
-                tbl_player = self.crawler_utils.handle_tbl_player(soup=soup, int_team_id=int_team_id)
-                self.players.append(tbl_player)
+                tbl_player = self.crawler_utils.handle_tbl_player(soup=soup,
+                                                                  int_player_id=int_player_id,
+                                                                  int_team_id=int_team_id)
 
-                int_player_id = tbl_player.int_player_id
+                self.players.append(tbl_player)
 
                 # Attacking
                 tbl_player_attacking = self.crawler_utils.handle_tbl_player_attacking(soup=soup,
@@ -229,7 +233,8 @@ class Crawler:
 
             # Handle inserting operations after 500 player loop finishes
             self.handle_insert_player_tables()
-            tbl_player_urls = controller.get_tbl_player_urls()  # Get new batch
+            tbl_player_urls = []
+            #TODO tbl_player_urls = controller.get_tbl_player_urls()  # Get new batch
 
     def handle_insert_player_tables(self):
         """ Inserts and clears player tables """
