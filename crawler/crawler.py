@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from time import sleep
 from controllers.controllers import Controllers
 from crawler.crawler_utils import CrawlerUtils
+import logging
 
 
 class Crawler:
@@ -11,6 +12,8 @@ class Crawler:
     """
 
     def __init__(self):
+
+        self.logger = logging.getLogger("sLogger")
 
         # DB controller
         self.controller = Controllers()
@@ -60,19 +63,25 @@ class Crawler:
 
         # Team url crawling and inserting
         # self.gather_links(is_team=True)  # default is True but pass it anyway
-        # controller.insert_tbl_team_urls(self.team_urls)
+        # self.controller.insert_tbl_team_urls(self.team_urls)
 
-        # print("Team urls inserted to DB.")
+        # self.logger.info("Team urls inserted to DB.")
 
-        # self.visit_team_page(controller=controller)
-        # controller.insert_tbl_team(tbl_teams=self.teams)
-        # controller.insert_tbl_team_tactic(tbl_team_tactics=self.team_tactics)
+        # self.logger.info("Team pages crawling started.")
+        # self.visit_team_page(controller=self.controller)
+        # self.controller.insert_tbl_team(tbl_teams=self.teams)
+        # self.controller.insert_tbl_team_tactic(tbl_team_tactics=self.team_tactics)
+        # self.logger.info("Team pages crawling finished.")
 
         # Player url crawling and inserting
         # self.gather_links(is_team=False)
-        # controller.insert_tbl_player_urls(self.player_urls)
+        # self.controller.insert_tbl_player_urls(self.player_urls)
+
+        # self.logger.info("Player urls inserted to DB")
+
+        self.logger.info("Player pages crawling started.")
         self.visit_player_page(controller=self.controller)
-        # print("Player urls inserted to DB")
+        self.logger.info("Player pages crawling finished.")
 
     def gather_links(self, is_team=True):
         """
@@ -86,15 +95,15 @@ class Crawler:
 
             while is_next_page_exists:
                 response = get(current_page)
-                print("Current page: " + current_page)
+                self.logger.info("Current page: " + current_page)
                 soup = BeautifulSoup(response.text, 'html.parser')
 
                 if is_team:
                     self.get_urls_in_page(soup, is_team=True)  # default is True but pass it anyway
-                    print(str(len(self.team_urls)) + " team link found so far.")
+                    self.logger.debug(str(len(self.team_urls)) + " team link found so far.")
                 else:
                     self.get_urls_in_page(soup, is_team=False)
-                    print(str(len(self.player_urls)) + " player link found so far.")
+                    self.logger.debug(str(len(self.player_urls)) + " player link found so far.")
 
                 # check if next page exists before going to the next page
                 is_next_page_exists, current_page = self.is_next_page_exists(soup)
@@ -104,9 +113,9 @@ class Crawler:
 
         except Exception as e:
             # TODO needs handling
-            print(e)
+            self.logger.exception(e)
 
-        print("All links found.")
+        self.logger.info("All links found.")
 
     def get_urls_in_page(self, soup, is_team=True):
         """
@@ -147,7 +156,7 @@ class Crawler:
             tbl_team_tactic = self.crawler_utils.handle_tbl_team_tactics(soup=soup, tbl_team_url=tbl_team_url)
             self.team_tactics.append(tbl_team_tactic)
 
-            print("{}/{} - {} crawled".format(i + 1, len(tbl_team_urls), tbl_team.str_team_name))
+            self.logger.info("{}/{} - {} crawled".format(i + 1, len(tbl_team_urls), tbl_team.str_team_name))
             sleep(self.politeness)
 
     def visit_player_page(self, controller):
@@ -166,11 +175,24 @@ class Crawler:
                 int_player_id = tbl_player_url.int_player_id
 
                 # get team url
-                str_team_url = soup.select(self.crawler_utils.player_str_team_url)[0]["href"]
-                str_team_url = self.base_site_url + str_team_url
+                if len(soup.select(self.crawler_utils.player_str_team_url)) >= 1:
+                    str_team_url = soup.select(self.crawler_utils.player_str_team_url)[0]["href"]
+                    str_team_url = self.base_site_url + str_team_url
 
                 # get team id from url -if exists-
                 int_team_id = self.controller.get_team_id_by_url(str_team_url)
+
+                # Sometimes website lists team and national team url's mixed order.
+                # If team url not found in DB then probably we get national team's url.
+                if int_team_id is None:
+                    if len(soup.select(self.crawler_utils.player_str_national_team_url)) >= 1:
+                        str_team_url = soup.select(self.crawler_utils.player_str_national_team_url)[0]["href"]
+                        str_team_url = self.base_site_url + str_team_url
+                        int_team_id = self.controller.get_team_id_by_url(str_team_url)
+
+                # If we still not find the team url probably current player has no team.
+                if int_team_id is None:
+                    int_team_id = 'NULL'
 
                 tbl_player = self.crawler_utils.handle_tbl_player(soup=soup,
                                                                   int_player_id=int_player_id,
@@ -228,13 +250,12 @@ class Crawler:
                                                                                 int_player_id=int_player_id)
                 self.player_traits.append(tbl_player_traits)
 
-                print("{}/{} - {} crawled".format(i + 1, len(tbl_player_urls), tbl_player.str_player_name))
+                self.logger.debug("{}/{} - {} crawled".format(i + 1, len(tbl_player_urls), tbl_player.str_player_name))
                 sleep(self.politeness)
 
             # Handle inserting operations after 500 player loop finishes
             self.handle_insert_player_tables()
-            tbl_player_urls = []
-            #TODO tbl_player_urls = controller.get_tbl_player_urls()  # Get new batch
+            tbl_player_urls = controller.get_tbl_player_urls()  # Get new batch
 
     def handle_insert_player_tables(self):
         """ Inserts and clears player tables """

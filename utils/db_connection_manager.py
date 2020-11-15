@@ -1,6 +1,7 @@
 from utils import read_ini_file
 import os
 import psycopg2
+import logging
 
 
 class ConnectionManager:
@@ -13,6 +14,7 @@ class ConnectionManager:
     def __init__(self):
         self.con = None
         self.cur = None
+        self.logger = logging.getLogger("sLogger")
 
     def __enter__(self):
         self.con, self.cur = self.connect()
@@ -21,8 +23,7 @@ class ConnectionManager:
     def __exit__(self, *args):
         self.close()
 
-    @staticmethod
-    def connect():
+    def connect(self):
         """ Connect to the db """
         conn = None
         cur = None
@@ -39,7 +40,7 @@ class ConnectionManager:
             # create a cursor
             cur = conn.cursor()
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            self.logger.exception("There was an exception while connecting the DB. Message: {}", error)
         finally:
             return conn, cur
 

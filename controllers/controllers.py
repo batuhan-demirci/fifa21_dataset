@@ -1,5 +1,4 @@
 from typing import List
-
 from utils.db_connection_manager import ConnectionManager
 from models.models import *
 
@@ -62,8 +61,9 @@ class Controllers:
                                    "int_value, " \
                                    "int_wage, " \
                                    "str_player_image_url, " \
-                                   "int_team_id) " \
-                                   "VALUES ({}, '{}', '{}', '{}', {}, {}, {}, {}, '{}', {}, {}, {}, '{}', {});"
+                                   "int_team_id," \
+                                   "str_nationality) " \
+                                   "VALUES ({}, '{}', '{}', '{}', {}, {}, {}, {}, '{}', {}, {}, {}, '{}', {}, '{}');"
         self.q_insert_tbl_player_attacking = "INSERT INTO public.tbl_player_attacking(int_player_id, " \
                                              "int_crossing, " \
                                              "int_finishing, " \
@@ -130,8 +130,8 @@ class Controllers:
         # Player select queries
         self.q_get_tbl_player_urls = "SELECT * " \
                                      "FROM public.tbl_player_urls " \
-                                     "WHERE int_player_id IN (1,5914) /**int_player_id NOT IN (SELECT int_player_id FROM tbl_player)**/ " \
-                                     "LIMIT 2"  # TODO 500
+                                     "WHERE int_player_id NOT IN (SELECT int_player_id FROM tbl_player) " \
+                                     "LIMIT 500"
 
     def insert_tbl_team_urls(self, tbl_team_urls):
         with ConnectionManager() as manager:
@@ -193,7 +193,8 @@ class Controllers:
                     tbl_player.int_value,
                     tbl_player.int_wage,
                     tbl_player.str_player_image_url,
-                    tbl_player.int_team_id
+                    tbl_player.int_team_id,
+                    tbl_player.str_nationality.replace("'", "''")
                 )
                 manager.cur.execute(q)
                 manager.con.commit()

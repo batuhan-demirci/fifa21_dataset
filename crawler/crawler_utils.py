@@ -1,11 +1,14 @@
 from models.models import *
 import re
 from datetime import datetime
+import logging
 
 
 class CrawlerUtils:
 
     def __init__(self):
+
+        self.logger = logging.getLogger("sLogger")
 
         # tbl_team
         self.team_str_team_name_selector = "#list > div:nth-child(4) > div > div > div.column.col-12 > div > " \
@@ -53,6 +56,9 @@ class CrawlerUtils:
         # use team url for getting the int_team_id
         self.player_str_team_url = "#list > div:nth-child(5) > div > div > div.column.col-12 > div.columns " \
                                    "> div:nth-child(2) > div > div:nth-child(3) > div > h5 > a"
+        self.player_str_national_team_url = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
+                                            "> div.columns > div:nth-child(2) > div > div:nth-child(4) > div > h5 > a"
+
         self.player_str_player_name_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                "> div.columns > div:nth-child(1) > div > div > h1"
         self.player_str_positions_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
@@ -76,6 +82,8 @@ class CrawlerUtils:
                                         "> div:nth-child(1) > div > section > div > div:nth-child(4) > div"
         self.player_str_player_image_url_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
                                                     "> div.columns > div:nth-child(1) > div > img"
+        self.player_str_player_nationality = "#list > div:nth-child(5) > div > div > div.column.col-12 " \
+                                             "> div.columns > div:nth-child(1) > div > div > div > a"
 
         # tbl_player_attacking
         self.player_int_crossing_selector = "#list > div:nth-child(5) > div > div > div.column.col-12 > div.columns " \
@@ -264,6 +272,7 @@ class CrawlerUtils:
         for pos in positions:
             str_positions += ", " + pos.text
 
+        str_positions = str_positions[2:]  # remove ", "
         tbl_player.str_positions = str_positions
 
         dob_height_weight = soup.select(self.player_dob_height_weight_selector)[0].text
@@ -273,13 +282,13 @@ class CrawlerUtils:
             try:
                 tbl_player.int_height = int(height)
             except ValueError:
-                print("Error while converting height to int value")
+                self.logger.exception("Error while converting height to int value")
 
         if weight is not None:
             try:
                 tbl_player.int_weight = int(weight)
             except ValueError:
-                print("Error while converting weight to int value")
+                self.logger.exception("Error while converting weight to int value")
 
         if dob is not None:
             date_of_birth = self.parse_date(dob)
@@ -303,6 +312,9 @@ class CrawlerUtils:
             tbl_player.int_wage = int_wage
 
         tbl_player.str_player_image_url = soup.select(self.player_str_player_image_url_selector)[0]["data-src"]
+
+        tbl_player.str_nationality = soup.select(self.player_str_player_nationality)[0]["title"]
+
         return tbl_player
 
     def handle_tbl_player_attacking(self, soup, int_player_id):
@@ -442,32 +454,33 @@ class CrawlerUtils:
 
         return traits
 
-    @staticmethod
-    def format_money(money):
+    def format_money(self, money):
 
-        money = money.replace("Value", "")
-        money = money.replace("Wage", "")
-        money = money.split("€")[1]
+        money_temp = money
+        money_temp = money_temp.replace("Value", "")
+        money_temp = money_temp.replace("Wage", "")
+        money_temp = money_temp.split("€")[1]
 
         # if "money" value is like "103.5M" we should add 5 zeros not 6
         digit_count_after_dot = 0
-        split_from_dot = money.split(".")
+        split_from_dot = money_temp.split(".")
 
         if len(split_from_dot) == 2:
             digit_count_after_dot = len(split_from_dot[1]) - 1  # minus 1 because of the "M" of "K"
+        money_temp = money_temp.replace(".", "")  # Remove dots
 
-        money = money.replace(".", "")  # Remove dots
-
-        if money.endswith("M"):
-            money = money[:-1] + ("0" * (6 - digit_count_after_dot))  # Remove M and add appropriate # of zero
-        elif money.endswith("K"):
-            money = money[:-1] + ("0" * (3 - digit_count_after_dot))  # Remove K and add appropriate # of zero
-        else:
-            print(money)
+        if money_temp.endswith("M"):
+            money_temp = money_temp[:-1] + ("0" * (6 - digit_count_after_dot))  # Remove M and add appropriate # of zero
+        elif money_temp.endswith("K"):
+            money_temp = money_temp[:-1] + ("0" * (3 - digit_count_after_dot))  # Remove K and add appropriate # of zero
+        # else:
+            # self.logger.error("Money doesn't contain 'M' or 'K'. Money: {}", money)
+            # money_temp = money_temp[:-1]
 
         try:
-            return int(money)
+            return int(money_temp)
         except ValueError:
+            self.logger.exception("There was an exception while converting the money value. Money: {}", money)
             return None
 
     @staticmethod

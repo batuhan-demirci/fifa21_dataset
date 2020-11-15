@@ -28,6 +28,7 @@ class TblPlayer(Base):
     int_wage = Column(Integer)
     str_player_image_url = Column(String(255))
     int_team_id = Column(Integer)
+    str_nationality = Column(String(50))
 
 
 class TblPlayerAttacking(Base):
