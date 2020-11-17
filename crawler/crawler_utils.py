@@ -395,14 +395,14 @@ class CrawlerUtils:
         profile.str_preferred_foot = soup.select(self.player_str_preferred_foot_selector)[0].text\
             .replace("Preferred Foot", "")
 
-        str_weak_foot = soup.select(self.player_int_weak_foot_selector)[0].text.replace(" ★ Weak Foot", "")
+        str_weak_foot = soup.select(self.player_int_weak_foot_selector)[0].text.split("★")[0].strip()
         profile.int_weak_foot = int(str_weak_foot)
 
-        str_skill_moves = soup.select(self.player_int_skill_moves_selector)[0].text.replace(" ★ Skill Moves", "")
+        str_skill_moves = soup.select(self.player_int_skill_moves_selector)[0].text.split("★")[0].strip()
         profile.int_skill_moves = int(str_skill_moves)
 
         str_international_reputations = soup.select(self.player_int_international_reputations_selector)[0]\
-            .text.replace(" ★ International Reputation", "")
+            .text.split("★")[0].strip()
         profile.int_international_reputations = int(str_international_reputations)
 
         profile.str_work_rate = soup.select(self.player_str_work_rate_selector)[0].text

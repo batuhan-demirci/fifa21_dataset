@@ -9,11 +9,11 @@ def main():
 
     logging.config.fileConfig("logging.conf")
     logger = logging.getLogger("sLogger")
-    logger.info("Crawling started at: " + datetime.now().strftime("%H:%M:%S"))
+    logger.info("Crawling started.")
 
     crawler = Crawler()
     crawler.crawl()
-    logger.info("Crawling ended at: " + datetime.now().strftime("%H:%M:%S"))
+    logger.info("Crawling finished.")
 
     sys.exit()
 

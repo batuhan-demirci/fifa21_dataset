@@ -166,8 +166,9 @@ class Crawler:
 
         tbl_player_urls = controller.get_tbl_player_urls()
 
-        # Get 500 player url every time
+        # Get 250 player url every time
         while len(tbl_player_urls) != 0:
+            self.logger.info("New player batch started.")
             for i, tbl_player_url in enumerate(tbl_player_urls):
                 response = get(tbl_player_url.str_url + metric)
                 soup = BeautifulSoup(response.text, 'html.parser')
@@ -253,8 +254,9 @@ class Crawler:
                 self.logger.debug("{}/{} - {} crawled".format(i + 1, len(tbl_player_urls), tbl_player.str_player_name))
                 sleep(self.politeness)
 
-            # Handle inserting operations after 500 player loop finishes
+            # Handle inserting operations after 250 player loop finishes
             self.handle_insert_player_tables()
+            self.logger.info("Current player batch finished.")
             tbl_player_urls = controller.get_tbl_player_urls()  # Get new batch
 
     def handle_insert_player_tables(self):

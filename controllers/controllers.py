@@ -131,7 +131,7 @@ class Controllers:
         self.q_get_tbl_player_urls = "SELECT * " \
                                      "FROM public.tbl_player_urls " \
                                      "WHERE int_player_id NOT IN (SELECT int_player_id FROM tbl_player) " \
-                                     "LIMIT 500"
+                                     "LIMIT 250"
 
     def insert_tbl_team_urls(self, tbl_team_urls):
         with ConnectionManager() as manager:
