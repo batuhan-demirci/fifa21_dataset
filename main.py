@@ -1,6 +1,5 @@
 from crawler.crawler import Crawler
 import sys
-from datetime import datetime
 import logging
 import logging.config
 

@@ -136,3 +136,7 @@ database.ini
 
 # pycharm
 .idea
+
+# data folder
+/data
+*.png

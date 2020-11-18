@@ -13,6 +13,9 @@ class Controllers:
         it's okay to use regular Python string formatting.
         """
 
+        # TODO parameterized query - prepared statement
+        # TODO try-catch
+
         # Team insert queries
         self.q_insert_tbl_team_urls = "INSERT INTO public.tbl_team_urls (str_url, dt_crawled) VALUES ('{}', NOW())"
         self.q_insert_tbl_team = "INSERT INTO public.tbl_team(int_team_id, " \
@@ -132,6 +135,8 @@ class Controllers:
                                      "FROM public.tbl_player_urls " \
                                      "WHERE int_player_id NOT IN (SELECT int_player_id FROM tbl_player) " \
                                      "LIMIT 250"
+
+        self.q_get_tbl_player_image_urls = "SELECT int_player_id, str_player_image_url FROM tbl_player"
 
     def insert_tbl_team_urls(self, tbl_team_urls):
         with ConnectionManager() as manager:
@@ -374,3 +379,17 @@ class Controllers:
                 tbl_player_url.dt_crawled = row[2]
                 tbl_player_urls.append(tbl_player_url)
         return tbl_player_urls
+
+    def get_tbl_player_image_urls(self):
+        tbl_player_image_urls = []
+
+        with ConnectionManager() as manager:
+            manager.cur.execute(self.q_get_tbl_player_image_urls)
+            rows = manager.cur.fetchall()
+
+            for row in rows:
+                tbl_player = TblPlayer()
+                tbl_player.int_player_id = row[0]
+                tbl_player.str_player_image_url = row[1]
+                tbl_player_image_urls.append(tbl_player)
+        return tbl_player_image_urls

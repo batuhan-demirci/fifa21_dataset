@@ -1,5 +1,6 @@
-from requests import get
-from bs4 import BeautifulSoup
+from requests import get  # main tool for getting the page source
+import shutil  # to save image locally
+from bs4 import BeautifulSoup  # html parser
 from time import sleep
 from controllers.controllers import Controllers
 from crawler.crawler_utils import CrawlerUtils
@@ -79,9 +80,13 @@ class Crawler:
 
         # self.logger.info("Player urls inserted to DB")
 
-        self.logger.info("Player pages crawling started.")
-        self.visit_player_page(controller=self.controller)
-        self.logger.info("Player pages crawling finished.")
+        # self.logger.info("Player pages crawling started.")
+        # self.visit_player_page(controller=self.controller)
+        # self.logger.info("Player pages crawling finished.")
+
+        self.logger.info("Player's images crawling started.")
+        self.download_player_image()
+        self.logger.info("Player's images crawling finished.")
 
     def gather_links(self, is_team=True):
         """
@@ -143,10 +148,13 @@ class Crawler:
                 return True, buttons["href"]
         return False, ""
 
-    def visit_team_page(self, controller):
-        tbl_team_urls = controller.get_tbl_team_urls()
+    def visit_team_page(self):
+        tbl_team_urls = self.controller.get_tbl_team_urls()
 
         for i, tbl_team_url in enumerate(tbl_team_urls):
+
+            # TODO try-catch
+
             response = get(tbl_team_url.str_url)
             soup = BeautifulSoup(response.text, 'html.parser')
 
@@ -159,17 +167,20 @@ class Crawler:
             self.logger.info("{}/{} - {} crawled".format(i + 1, len(tbl_team_urls), tbl_team.str_team_name))
             sleep(self.politeness)
 
-    def visit_player_page(self, controller):
+    def visit_player_page(self):
 
         # add ?units=mks to url to get correct units
         metric = "?units=mks"
 
-        tbl_player_urls = controller.get_tbl_player_urls()
+        tbl_player_urls = self.controller.get_tbl_player_urls()
 
         # Get 250 player url every time
         while len(tbl_player_urls) != 0:
             self.logger.info("New player batch started.")
             for i, tbl_player_url in enumerate(tbl_player_urls):
+
+                # TODO try-catch
+
                 response = get(tbl_player_url.str_url + metric)
                 soup = BeautifulSoup(response.text, 'html.parser')
 
@@ -257,7 +268,7 @@ class Crawler:
             # Handle inserting operations after 250 player loop finishes
             self.handle_insert_player_tables()
             self.logger.info("Current player batch finished.")
-            tbl_player_urls = controller.get_tbl_player_urls()  # Get new batch
+            tbl_player_urls = self.controller.get_tbl_player_urls()  # Get new batch
 
     def handle_insert_player_tables(self):
         """ Inserts and clears player tables """
@@ -284,3 +295,30 @@ class Crawler:
         self.player_skill = []
         self.player_speciality = []
         self.player_traits = []
+
+    def download_player_image(self):
+        """ This function saves player images """
+
+        images_folder_path = "./data/images/"
+        tbl_player_image_urls = self.controller.get_tbl_player_image_urls()
+
+        for tbl_player in tbl_player_image_urls:
+            image_path = images_folder_path + str(tbl_player.int_player_id) + ".png"
+            r = get(tbl_player.str_player_image_url, stream=True)
+
+            # Check if the image was retrieved successfully
+            if r.status_code == 200:
+
+                # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
+                r.raw.decode_content = True
+
+                # Open a local file with wb ( write binary ) permission.
+                with open(image_path, 'wb') as f:
+                    shutil.copyfileobj(r.raw, f)
+
+                self.logger.debug('Player ID: %s image successfully downloaded: ', str(tbl_player.int_player_id))
+                sleep(self.politeness)
+            else:
+                self.logger.debug('Player ID: %s Status Code: %s image could not retrieved',
+                                  str(tbl_player.int_player_id),
+                                  str(r.status_code))
