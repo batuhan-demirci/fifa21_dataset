@@ -138,5 +138,4 @@ database.ini
 .idea
 
 # data folder
-/data
-*.png
+/data/images

@@ -10,10 +10,10 @@ class Controllers:
         This class handles database operations.
         Queries generated from pgAdmin4 web console
         Note: Normally we should parameterize our queries but since this project is not open for any user
-        it's okay to use regular Python string formatting.
+        it's okay to use regular Python string formatting. (or is it?..)
         """
 
-        # TODO parameterized query - prepared statement
+        # TODO parameterized query - prepared statement??
         # TODO try-catch
 
         # Team insert queries
