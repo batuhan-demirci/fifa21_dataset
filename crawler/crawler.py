@@ -63,26 +63,26 @@ class Crawler:
     def crawl(self):
 
         # Team url crawling and inserting
-        # self.gather_links(is_team=True)  # default is True but pass it anyway
-        # self.controller.insert_tbl_team_urls(self.team_urls)
+        self.gather_links(is_team=True)  # default is True but pass it anyway
+        self.controller.insert_tbl_team_urls(self.team_urls)
 
-        # self.logger.info("Team urls inserted to DB.")
+        self.logger.info("Team urls inserted to DB.")
 
-        # self.logger.info("Team pages crawling started.")
-        # self.visit_team_page(controller=self.controller)
-        # self.controller.insert_tbl_team(tbl_teams=self.teams)
-        # self.controller.insert_tbl_team_tactic(tbl_team_tactics=self.team_tactics)
-        # self.logger.info("Team pages crawling finished.")
+        self.logger.info("Team pages crawling started.")
+        self.visit_team_page(controller=self.controller)
+        self.controller.insert_tbl_team(tbl_teams=self.teams)
+        self.controller.insert_tbl_team_tactic(tbl_team_tactics=self.team_tactics)
+        self.logger.info("Team pages crawling finished.")
 
         # Player url crawling and inserting
-        # self.gather_links(is_team=False)
-        # self.controller.insert_tbl_player_urls(self.player_urls)
+        self.gather_links(is_team=False)
+        self.controller.insert_tbl_player_urls(self.player_urls)
 
-        # self.logger.info("Player urls inserted to DB")
+        self.logger.info("Player urls inserted to DB")
 
-        # self.logger.info("Player pages crawling started.")
-        # self.visit_player_page(controller=self.controller)
-        # self.logger.info("Player pages crawling finished.")
+        self.logger.info("Player pages crawling started.")
+        self.visit_player_page(controller=self.controller)
+        self.logger.info("Player pages crawling finished.")
 
         self.logger.info("Player's images crawling started.")
         self.download_player_image()
@@ -117,14 +117,13 @@ class Crawler:
                 sleep(self.politeness)
 
         except Exception as e:
-            # TODO needs handling
             self.logger.exception(e)
 
         self.logger.info("All links found.")
 
     def get_urls_in_page(self, soup, is_team=True):
         """
-        Takes is_team as a parameter, according to that it collects appropriate urls and stores
+        Takes is_team as a parameter, according to that it collects appropriate urls and stores for crawling later
         """
 
         if is_team:
@@ -149,11 +148,11 @@ class Crawler:
         return False, ""
 
     def visit_team_page(self):
+        """ Visits a url and extract information about teams """
+
         tbl_team_urls = self.controller.get_tbl_team_urls()
 
         for i, tbl_team_url in enumerate(tbl_team_urls):
-
-            # TODO try-catch
 
             response = get(tbl_team_url.str_url)
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -168,6 +167,7 @@ class Crawler:
             sleep(self.politeness)
 
     def visit_player_page(self):
+        """ Visit a url and extract information about players """
 
         # add ?units=mks to url to get correct units
         metric = "?units=mks"
@@ -178,8 +178,6 @@ class Crawler:
         while len(tbl_player_urls) != 0:
             self.logger.info("New player batch started.")
             for i, tbl_player_url in enumerate(tbl_player_urls):
-
-                # TODO try-catch
 
                 response = get(tbl_player_url.str_url + metric)
                 soup = BeautifulSoup(response.text, 'html.parser')
@@ -202,7 +200,7 @@ class Crawler:
                         str_team_url = self.base_site_url + str_team_url
                         int_team_id = self.controller.get_team_id_by_url(str_team_url)
 
-                # If we still not find the team url probably current player has no team.
+                # If we still can not find the team url, probably current player has no team.
                 if int_team_id is None:
                     int_team_id = 'NULL'
 
@@ -272,6 +270,7 @@ class Crawler:
 
     def handle_insert_player_tables(self):
         """ Inserts and clears player tables """
+
         self.controller.insert_tbl_player(self.players)
         self.controller.insert_tbl_player_attacking(self.player_attacking)
         self.controller.insert_tbl_player_defending(self.player_defending)
@@ -312,7 +311,7 @@ class Crawler:
                 # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
                 r.raw.decode_content = True
 
-                # Open a local file with wb ( write binary ) permission.
+                # Open a local file with wb (write binary) permission.
                 with open(image_path, 'wb') as f:
                     shutil.copyfileobj(r.raw, f)
 

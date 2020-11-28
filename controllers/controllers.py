@@ -13,9 +13,6 @@ class Controllers:
         it's okay to use regular Python string formatting. (or is it?..)
         """
 
-        # TODO parameterized query - prepared statement??
-        # TODO try-catch
-
         # Team insert queries
         self.q_insert_tbl_team_urls = "INSERT INTO public.tbl_team_urls (str_url, dt_crawled) VALUES ('{}', NOW())"
         self.q_insert_tbl_team = "INSERT INTO public.tbl_team(int_team_id, " \

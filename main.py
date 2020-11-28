@@ -15,7 +15,9 @@ def main():
     crawler.crawl()
     logger.info("Crawling finished.")
 
+    logger.info("Generating CSV files...")
     generate_data.generate()
+    logger.info("CSV Files are generated.")
 
     sys.exit()
 

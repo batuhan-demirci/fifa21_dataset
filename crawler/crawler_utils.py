@@ -5,6 +5,7 @@ import logging
 
 
 class CrawlerUtils:
+    """ Contains all extraction logic, selectors, parser functions... """
 
     def __init__(self):
 
@@ -224,6 +225,7 @@ class CrawlerUtils:
 
     def handle_tbl_team(self, soup, tbl_team_url):
         """ Extracts information about tbl_team and returns """
+
         tbl_team = TblTeam()
         tbl_team.int_team_id = tbl_team_url.int_team_id
         tbl_team.str_team_name = soup.select(self.team_str_team_name_selector)[0].text
@@ -245,6 +247,7 @@ class CrawlerUtils:
         return tbl_team
 
     def handle_tbl_team_tactics(self, soup, tbl_team_url):
+        """ Extracts information about tbl_team_tactics and returns """
 
         tbl_team_tactic = TblTeamTactic()
         tbl_team_tactic.int_team_id = tbl_team_url.int_team_id
@@ -260,6 +263,8 @@ class CrawlerUtils:
         return tbl_team_tactic
 
     def handle_tbl_player(self, soup, int_player_id, int_team_id):
+        """ Extracts information about tbl_player and returns """
+
         tbl_player = TblPlayer()
 
         tbl_player.int_player_id = int_player_id
@@ -318,6 +323,8 @@ class CrawlerUtils:
         return tbl_player
 
     def handle_tbl_player_attacking(self, soup, int_player_id):
+        """ Extracts information about tbl_player_attacking and returns """
+
         attacking = TblPlayerAttacking()
 
         attacking.int_player_id = int_player_id
@@ -330,6 +337,8 @@ class CrawlerUtils:
         return attacking
 
     def handle_tbl_player_defending(self, soup, int_player_id):
+        """ Extracts information about tbl_player_defending and returns """
+
         defending = TblPlayerDefending()
 
         defending.int_player_id = int_player_id
@@ -340,6 +349,8 @@ class CrawlerUtils:
         return defending
 
     def handle_tbl_player_goalkeeping(self, soup, int_player_id):
+        """ Extracts information about tbl_player_goalkeeping and returns """
+
         goalkeeping = TblPlayerGoalkeeping()
 
         goalkeeping.int_player_id = int_player_id
@@ -352,6 +363,8 @@ class CrawlerUtils:
         return goalkeeping
 
     def handle_tbl_player_mentality(self, soup, int_player_id):
+        """ Extracts information about tbl_player_mentality and returns """
+
         mentality = TblPlayerMentality()
 
         mentality.int_player_id = int_player_id
@@ -365,6 +378,8 @@ class CrawlerUtils:
         return mentality
 
     def handle_tbl_player_movement(self, soup, int_player_id):
+        """ Extracts information about tbl_player_movement and returns """
+
         movement = TblPlayerMovement()
 
         movement.int_player_id = int_player_id
@@ -377,6 +392,8 @@ class CrawlerUtils:
         return movement
 
     def handle_tbl_player_power(self, soup, int_player_id):
+        """ Extracts information about tbl_player_power and returns """
+
         power = TblPlayerPower()
 
         power.int_player_id = int_player_id
@@ -389,6 +406,8 @@ class CrawlerUtils:
         return power
 
     def handle_tbl_player_profile(self, soup, int_player_id):
+        """ Extracts information about tbl_player_profile and returns """
+
         profile = TblPlayerProfile()
 
         profile.int_player_id = int_player_id
@@ -411,6 +430,8 @@ class CrawlerUtils:
         return profile
 
     def handle_tbl_player_skill(self, soup, int_player_id):
+        """ Extracts information about tbl_player_skill and returns """
+
         skill = TblPlayerSkill()
 
         skill.int_player_id = int_player_id
@@ -423,6 +444,8 @@ class CrawlerUtils:
         return skill
 
     def handle_tbl_player_specialities(self, soup, int_player_id):
+        """ Extracts information about tbl_player_specialities and returns """
+
         # check if exist
         specialities_list = soup.select(self.player_str_player_speciality_selector)
         specialities = []
@@ -439,6 +462,8 @@ class CrawlerUtils:
         return specialities
 
     def handle_tbl_player_traits(self, soup, int_player_id):
+        """ Extracts information about tbl_player_traits and returns """
+
         # check if exist
         traits_list = soup.select(self.player_str_trait_selector)
         traits = []
@@ -455,7 +480,7 @@ class CrawlerUtils:
         return traits
 
     def format_money(self, money):
-
+        """ Formats money value """
         money_temp = money
         money_temp = money_temp.replace("Value", "")
         money_temp = money_temp.replace("Wage", "")
@@ -485,7 +510,7 @@ class CrawlerUtils:
 
     @staticmethod
     def split_personal_data(personal_data_text):
-
+        """ Extracts height, weight and date of birth of player """
         regex = r"(\()(.*?)(\))( )(\d{3})(cm )(.*?)(kg)"
 
         matches = re.search(regex, personal_data_text)
@@ -497,5 +522,6 @@ class CrawlerUtils:
 
     @staticmethod
     def parse_date(date):
+        """ Converts given string value of date to date object """
         date_object = datetime.strptime(date, "%b %d, %Y")
         return date_object

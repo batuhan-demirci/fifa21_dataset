@@ -1,6 +1,7 @@
 import pandas as pd
 from utils.db_connection_manager import ConnectionManager
 
+""" This module generates csv files for each table """
 
 queries = [('./data/tbl_player_urls.csv', 'SELECT * FROM tbl_player_urls;'),
            ('./data/tbl_player.csv', 'SELECT * FROM tbl_player;'),

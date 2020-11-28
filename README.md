@@ -17,10 +17,6 @@ This repository contains FIFA 2021 Player &amp; Team ratings scraped from web.
 
 The red squares indicate that specified information has been scraped. 
 
-### TODOs ###
- - Error handling
- - Comment / documentation
- - Beautify README.md
  
 ### What can you do with this dataset? - Ideas (next step) ###
  - General EDA
