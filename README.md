@@ -20,6 +20,7 @@ The red squares indicate that specified information has been scraped.
  
 ### What can you do with this dataset? - Ideas (next step) ###
  - General EDA
+ 
 #### About Players ####
  - Visualize player's position(s)
  - Predict player's all overall rating for every position (ST = 92, CAM = 84 etc.)
